@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Real Estate Buyer Portal Assignment
 
-## Getting Started
+Full stack implementation of buyer auth + favourites portal using:
 
-First, run the development server:
+- Next.js (App Router)
+- Hono (API routing in Next route handler)
+- PostgreSQL
+- Prisma ORM
+- JWT auth (stored in HTTP-only cookie)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+## Features Implemented
+
+- User registration and login (email + password)
+- Password hashing with bcrypt (no raw password storage)
+- JWT-based authentication
+- Protected buyer dashboard
+- My Favourites list per user
+- Add/remove property favourites
+- Authorization checks so users can only access their own favourites
+- Basic server-side validation and error handling
+- Tiny DB layer with users, properties, favourites tables
+
+## Project Structure
+
+- app/(auth)/sign-in/page.tsx: Sign-in UI (route group)
+- app/(auth)/sign-up/page.tsx: Sign-up UI (route group)
+- app/(dashboard)/dashboard/page.tsx: Buyer dashboard UI (route group)
+- app/api/[...route]/route.ts: Composed Hono API entrypoint
+- features/auth/server/route.ts: Auth API routes
+- features/properties/server/route.ts: Properties API routes
+- features/favourites/server/route.ts: Favourites API routes
+- lib/session-middleware.ts: Shared auth middleware
+- lib/prisma.ts: Prisma client singleton
+- lib/auth.ts: JWT helpers
+- prisma/schema.prisma: Database schema
+
+## Prerequisites
+
+- Node.js 20+
+- pnpm
+- PostgreSQL running locally
+
+## Environment
+
+Create or update .env with:
+
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/realstatebroker?schema=public"
+JWT_SECRET="your-long-random-secret"
+
+## Run the App
+
+1. Install dependencies
+
+pnpm install
+
+2. Generate Prisma client
+
+pnpm prisma generate
+
+3. Apply migration
+
+pnpm prisma migrate dev --name init_auth_favourites
+
+4. Start dev server
+
 pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open app
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Example Flow
 
-## Learn More
+1. Open /sign-up
+2. Create account (name, email, password)
+3. Redirect to dashboard
+4. Click Add Favourite on a property
+5. Property appears in My Favourites
+6. Click Remove Favourite to unlike
+7. Logout and login again to verify favourites persistence
 
-To learn more about Next.js, take a look at the following resources:
+## API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/me
+- POST /api/auth/logout
+- GET /api/properties
+- GET /api/favourites
+- POST /api/favourites
+- DELETE /api/favourites/:propertyId
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Notes
 
-## Deploy on Vercel
+- Properties are auto-seeded on first GET /api/properties call.
+- Auth token is set as HTTP-only cookie for safer browser storage.
+- Favourites table has unique constraint on (userId, propertyId).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+INSERT INTO "Property" ("id", "title", "city", "price", "createdAt", "updatedAt") VALUES
+('np_prop_1', '2BHK Apartment at Baluwatar', 'Kathmandu', 18500000, NOW(), NOW()),
+('np_prop_2', 'Lake View Flat near Lakeside', 'Pokhara', 14200000, NOW(), NOW()),
+('np_prop_3', 'Family House at Imadol', 'Lalitpur', 22800000, NOW(), NOW()),
+('np_prop_4', 'Commercial Shutter in Traffic Chowk', 'Butwal', 9800000, NOW(), NOW()),
+('np_prop_5', 'Residential Plot near Itahari Chowk', 'Itahari', 12500000, NOW(), NOW()),
+('np_prop_6', 'New Duplex House at Bharatpur', 'Chitwan', 20500000, NOW(), NOW());
