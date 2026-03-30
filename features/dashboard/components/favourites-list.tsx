@@ -20,7 +20,7 @@ export function FavouritesList({ favourites }: FavouritesListProps) {
             <div key={item.id} className="rounded-2xl border border-[#e7dfd2] bg-emerald-50/50 p-4">
               <p className="font-semibold text-slate-900">{item.property.title}</p>
               <p className="text-sm text-slate-600">{item.property.city}</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">INR {item.property.price.toLocaleString("en-IN")}</p>
+              <p className="mt-1 text-sm font-medium text-slate-900">Rs {item.property.price.toLocaleString("en-IN")}</p>
             </div>
           ))}
         </div>

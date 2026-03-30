@@ -25,7 +25,7 @@ export function PropertyList({
             <div key={property.id} className="rounded-2xl border border-[#e7dfd2] bg-slate-50 p-4">
               <p className="font-semibold text-slate-900">{property.title}</p>
               <p className="text-sm text-slate-600">{property.city}</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">INR {property.price.toLocaleString("en-IN")}</p>
+              <p className="mt-1 text-sm font-medium text-slate-900">Rs {property.price.toLocaleString("en-IN")}</p>
               <button
                 disabled={savingPropertyId === property.id}
                 onClick={() => onToggleFavourite(property.id)}
